@@ -124,6 +124,8 @@ pheatmap(assay(rld)[top_hits,], cluster_rows = TRUE,
          show_rownames = TRUE, cluster_cols = TRUE)
 pheatmap(assay(rld)[top_hits,])
 
+#assay() converts the data in DESeqTransform object to a 2-dimensional obj like matrix.
+
 
 #heat map of Z scores
 cal_z_score <- function(x){(x-mean(x))/sd(x)}
