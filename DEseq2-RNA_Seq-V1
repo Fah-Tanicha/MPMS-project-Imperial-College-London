@@ -39,7 +39,7 @@ dds <- dds[keep,]
 
 
 #stat test to identify differentially expressed genes
-dds <- DESeq(dds)
+dds <- DESeq(dds) #this function already normalised the count using median of ratios method
 deseq_result <- results(dds)
 deseq_result
 
