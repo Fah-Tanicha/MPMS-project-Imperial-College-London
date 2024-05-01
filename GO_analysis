@@ -1,0 +1,106 @@
+rm(list=ls()) # clear all variables and graphics
+graphics.off()
+
+
+library(DESeq2)
+library(dplyr)
+library(RColorBrewer)
+library(ggplot2)
+library(ggrepel)
+
+BiocManager::install('clusterProfiler') #this is what is used for GO
+BiocManager::install('AnnotationDbi') #this is what running on the background
+BiocManager::install('org.At.tair.db') #Genomic name database
+BiocManager::install('biomaRt')
+
+library('clusterProfiler')
+library('AnnotationDbi')
+library('org.At.tair.db')
+
+######DESeq2 analysis######
+#set working directory
+setwd('/Users/baiprongfah/Master-ICL/MPMS-project2/SR45-reads')
+
+#load count data 
+count_data <- read.csv('counts_table.csv', header = TRUE, row.names = 1)
+colnames(count_data)
+head(count_data)
+
+#load sample info
+sample_info <- read.csv('condition.csv', header = TRUE, row.names = 1)
+colnames(sample_info)
+head(sample_info)
+
+#set factor levels
+sample_info$condition <- factor(sample_info$condition)
+
+#Create a Deseq object and import the count data and sample info
+dds <- DESeqDataSetFromMatrix(countData = count_data, 
+                              colData = sample_info,
+                              design = ~condition)
+
+#set the reference for the treatment factor
+dds$condition <- factor(dds$condition, levels = c('control','mutant'))
+
+#Filter the genes, only keep the gene with not to low count number 
+keep<- rowSums(counts(dds)) >= 5 #we keep only the gene with count >5 
+dds <- dds[keep,]
+
+
+#stat test to identify differentially expressed genes
+dds <- DESeq(dds)
+deseq_result <- results(dds)
+deseq_result
+
+sigs <- na.omit(deseq_result) #omit na in the result
+sigs
+sigs <- sigs[sigs$padj < 0.05 & sigs$baseMean > 50,]
+
+sigs <- as.data.frame(sigs)
+
+#we want only gene names with log2foldchange >0.5
+genes <- rownames(sigs[sigs$log2FoldChange > 0.5,])
+
+
+######Mapping gene name to database#####
+#Retrieve information from BiomaRt
+library(biomaRt)
+
+listEnsemblGenomes() #find biomart across kingdoms
+
+ensembl_plants <- useEnsemblGenomes(biomart = "plants_mart")#select plant database
+searchDatasets(ensembl_plants, pattern = "Arabidopsis")
+
+ensembl_arabidopsis <- useEnsemblGenomes(biomart = "plants_mart", 
+                                         dataset = "athaliana_eg_gene") #create mart obj
+
+##biomart query to change the tair locu format to GO_ID
+##not neccessary when the keytype can be TAIR ID 
+
+list.fil <- listFilters(ensembl_arabidopsis) #see what filters are to selected from the database
+list.att <- listAttributes(ensembl_arabidopsis) #see what attributes are there
+
+mapping <- getBM(
+  attributes = c('go_id','ensembl_gene_id', #the output
+                 'ensembl_transcript_id'
+                 ), 
+  filters = 'tair_locus', #input
+  values = genes,
+  mart = atmart
+)
+
+class(mapping)
+
+#convert mapping from dataframe to vector by 1st column
+gene1 <- mapping[['ensembl_gene_id']]
+
+keytypes(org.At.tair.db)
+
+GO_results <- enrichGO(gene = genes, 
+                       OrgDb = 'org.At.tair.db', #based on the arabidopsis thaliana database available
+                       keyType = "TAIR", 
+                       ont = "BP") # BP is ontology for biological processes
+
+GO <- as.data.frame(GO_results)
+
+plot(barplot(GO_results, showCategory = 20)) #show 20 biological processes
