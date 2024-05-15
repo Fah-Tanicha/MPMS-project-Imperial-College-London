@@ -51,15 +51,32 @@ dds <- dds[keep,]
 dds <- DESeq(dds)
 deseq_result <- results(dds)
 deseq_result
+no_na <- na.omit(deseq_result) #omit na in the result
 
-sigs <- na.omit(deseq_result) #omit na in the result
-sigs
-sigs <- sigs[sigs$padj < 0.05 & sigs$baseMean > 50,]
 
+
+#####Prepare input#######
+#Input for enrich analysis will be the vector of gene names based on our filtration
+#Input for GSE analysis will be the vector of the LCF and gene name (ENTREZID format only for GSEKEGG)
+
+
+#Filter the desired gene name
+#only choose the genes name significantly differential expression
+sigs <- no_na[no_na$padj < 0.05,]
+
+#Convert to dataframe so will be merge with the biomart name later 
 sigs <- as.data.frame(sigs)
 
-#we want only gene names with log2foldchange >0.5
-genes <- rownames(sigs[sigs$log2FoldChange > 0.5,])
+#change the gene id to the 1st column
+sigs <- cbind(newColName = rownames(sigs), sigs)
+rownames(sigs) <- 1:nrow(sigs)
+colnames(sigs)[1] <- "Gene_ID" #assign the name
+class(sigs)
+
+#Selecting only gene names with desired up or down reg
+genes <- rownames(sigs[sigs$log2FoldChange > 1,])
+genes <- rownames(sigs[sigs$log2FoldChange < -1,])
+#the higher the log2foldchange, the higher expression of those gene in mutant than controls
 
 
 ######Mapping gene name to database#####
@@ -74,33 +91,110 @@ searchDatasets(ensembl_plants, pattern = "Arabidopsis")
 ensembl_arabidopsis <- useEnsemblGenomes(biomart = "plants_mart", 
                                          dataset = "athaliana_eg_gene") #create mart obj
 
-##biomart query to change the tair locu format to GO_ID
-##not neccessary when the keytype can be TAIR ID 
+########biomart query######
 
 list.fil <- listFilters(ensembl_arabidopsis) #see what filters are to selected from the database
 list.att <- listAttributes(ensembl_arabidopsis) #see what attributes are there
 
-mapping <- getBM(
-  attributes = c('go_id','ensembl_gene_id', #the output
-                 'ensembl_transcript_id'
-                 ), 
-  filters = 'tair_locus', #input
-  values = genes,
-  mart = atmart
-)
+#get the entrezgene id from the biomart
+gene_id <- getBM(
+  attributes = c('ensembl_gene_id','tair_locus', #the output
+                  'entrezgene_id'), 
+  mart = ensembl_arabidopsis)
 
-class(mapping)
+class(gene_id)
 
-#convert mapping from dataframe to vector by 1st column
-gene1 <- mapping[['ensembl_gene_id']]
+#merge the gene id into the sigs dataframe
+gene <- merge(sigs, gene_id[,c(1,3)], by.x ='Gene_ID', by.y='ensembl_gene_id')
+#almost 1000 genes disappear when combining tair_locus and entrez_id
+gene <- na.omit(gene)
 
+########check what keytype available######
 keytypes(org.At.tair.db)
+# SET THE DESIRED ORGANISM HERE
+organism = "org.At.tair.db"
+BiocManager::install(organism, character.only = TRUE)
+library(organism, character.only = TRUE)
 
+#########GO analysis########
 GO_results <- enrichGO(gene = genes, 
-                       OrgDb = 'org.At.tair.db', #based on the arabidopsis thaliana database available
+                       OrgDb = 'org.At.tair.db', 
                        keyType = "TAIR", 
                        ont = "BP") # BP is ontology for biological processes
+  #MF molecular function, CC cellualr process
 
 GO <- as.data.frame(GO_results)
+write.csv(GO, 'GO_up_2fold_1.csv')
 
-plot(barplot(GO_results, showCategory = 20)) #show 20 biological processes
+plot(barplot(GO_results, showCategory = 10))
+## remove redundent GO terms
+ego2 <- simplify(GO_results)
+cnetplot(ego2, foldChange=sigs)
+
+######over representation analysis ######
+options(ggrepel.max.overlaps = Inf) #global infinite plot
+ego <- enrichGO(gene          = genes, #genes : vector of gene names
+                OrgDb         = org.At.tair.db,
+                keyType       = "TAIR", 
+                ont           = "ALL",
+                pAdjustMethod = "BH",
+                pvalueCutoff  = 0.01, #meaning selecting p value > 0.01
+                qvalueCutoff  = 0.05,
+                readable = TRUE)
+head(ego)
+over_en <- as.data.frame(ego)
+dotplot(ego, split="ONTOLOGY") + facet_grid(ONTOLOGY~., scale="free")
+barplot(ego,
+        drop = TRUE,
+        showCategory = 10,
+        label_format = 20,
+        title = "GO Biological Pathways",
+        font.size = 8)
+######GSE analysis#####
+#the input need to be the vector of genelist in ENTREZID and the LFC
+#extract log2foldchange from the result 
+d <- gene[,c(3,8)]
+## assume 1st column is FC
+## 2nd column is ID
+
+## feature 1: numeric vector
+geneList <- d[,1]
+
+## feature 2: named vector
+names(geneList) = as.character(d[,2])
+
+## feature 3: decreasing order
+geneList = sort(geneList, decreasing = TRUE)
+
+head(geneList)
+?gseGO()
+?keyType
+
+GSE_results <- gseGO(geneList = geneList, 
+                     OrgDb = org.At.tair.db, 
+                     #keyType = "ENTREZID", 
+                     ont = 'BP',# BP is ontology for biological processes
+                     #nPerm = 10000, #the larger number of permutation, the more accurate but also take time
+                     minGSSize = 1, #minimum no of gene set
+                     maxGSSize = 1000, #maximum no of gene set
+                     pvalueCutoff = 0.05, #filter pvalue and adjusted p
+                     verbose = FALSE) #BH = Benjamini-Hochberg
+head(GSE_results$result)
+
+require(DOSE)
+?dotplot
+dotplot(GSE_results, showCategory=10, split=".sign",
+        title ='GSE result MF processes pcutoff=0.05', font.size = 8
+        ) + facet_grid(.~.sign)
+
+#emapplot connecting overlapping gene sets
+emapplot(GSE_results, showCategory=10)
+x2 <- pairwise_termsim(GSE_results) 
+emapplot(x2,showCategory=10, font.size= 8)
+
+#category netplot
+# categorySize can be either 'pvalue' or 'geneNum'
+cnetplot(GSE_results, categorySize="pvalue", foldChange=geneList)
+?cnetplot()
+#ridge plot
+ridgeplot(GSE_results) + labs(x = "enrichment distribution")
