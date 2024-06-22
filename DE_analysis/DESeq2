@@ -1,0 +1,233 @@
+#This is a R script for a differential gene expression analysis using DESeq2
+
+rm(list=ls()) # clear all variables and graphics
+graphics.off()
+
+####Download and install required packages###
+
+library(DESeq2)
+library(pheatmap)
+library(dplyr)
+library(RColorBrewer)
+library(ggplot2)
+library(ggrepel)
+
+#set working directory
+setwd('/Users/baiprongfah/Master-ICL/MPMS-project2/original_counts')
+
+#load count data 
+count_data <- read.csv('counts_table.csv', header = TRUE, row.names = 1)
+colnames(count_data)
+head(count_data)
+
+#load sample info
+sample_info <- read.csv('condition.csv', header = TRUE, row.names = 1)
+colnames(sample_info)
+head(sample_info)
+
+#set factor levels
+sample_info$condition <- factor(sample_info$condition)
+
+#Create a Deseq object and import the count data and sample info
+dds <- DESeqDataSetFromMatrix(countData = count_data, 
+                              colData = sample_info,
+                              design = ~condition)
+
+#set the reference for the treatment factor
+dds$condition <- factor(dds$condition, levels = c('control','mutant'))
+
+#Filter the genes, only keep the gene with not to low count number 
+keep<- rowSums(counts(dds)) > 1 #we keep only the gene with count >1 
+dds <- dds[keep,]
+
+
+#stat test to identify differentially expressed genes
+dds <- DESeq(dds)
+deseq_result <- results(dds)
+deseq_result
+
+#check size factors 
+sizeFactors(dds)
+colSums(counts(dds))
+colSums(counts(dds, normalized = TRUE))
+estimateSizeFactors(dds)
+
+#change DESeq object to dataframe
+deseq_result <- as.data.frame(deseq_result)
+class(deseq_result)
+head(deseq_result)
+
+####Extract the most differentially expressed genes due to the condition#####
+#Select genes with a significnat change in gene expression (adjusted p-value < 0.05)
+#And log2foldchange not equal 0
+
+#step1 : filter based on adjusted p value <0.05
+filtered <- deseq_result %>% filter(deseq_result$padj < 0.05)
+
+#step2 : filter based on fold change not equal to 0
+filtered <- filtered %>% filter(abs(filtered$log2FoldChange) >1 ) #this is 2X upregulated gene
+  #abs(log2FC)>1 (which implies FC > 2 or FC < 0.5).
+
+dim(deseq_result) #get dimension of an object in rows and columns
+dim(filtered) # now the rows are reduced and it was filterd.
+
+#save the deseq result 
+write.csv(deseq_result,'de_result.total.csv')
+write.csv(filtered,'de_result.filter.csv')
+
+
+#save the normalised counts
+
+normalised_counts <- counts(dds, normalize = TRUE)
+  #normalize = TRUE returns the relative frequency 
+  #by dividing all values by the sum of values
+head(normalised_counts)
+write.csv(normalised_counts, 'normalised_counts.csv')
+?normalize
+
+#Visualisation
+
+#Dispersion plot
+plotDispEsts(dds)
+
+#plot PCA
+#used for explaining the variance in gene expression data set 
+#First, perform a variant stabilising transformation ?
+vsd <- vst(dds, blind = FALSE) #because plotpca cannot work with dds dataset
+
+plotPCA(vsd, intgroup= c('condition')) + coord_fixed(ratio = 1.5)
+#not very useful when only 1 factor
+
+#Heat map sample-to-saple distance matrix
+#1: generate the distance matrix
+sampleDists <- dist(t(assay(vsd))) 
+samplDistMatrix <- as.matrix(sampleDists) #generate matrix
+colnames(samplDistMatrix)
+?dist
+#2:set colors
+colors <- colorRampPalette(rev(brewer.pal(9,'Blues')))(255)
+
+?colorRampPalette
+#3: generate heat map
+pheatmap(samplDistMatrix, clustering_distance_rows = sampleDists,
+         clustering_distance_cols = sampleDists,col =colors)
+
+#heatmap based on log transformed normalised counts
+#using top 20 genes
+top_hits <- deseq_result[order(deseq_result$padj),][1:50,] 
+#the smaller the padj, the more significantly expressed genes
+top_hits <- row.names(top_hits)
+
+rld <- rlog(dds, blind = TRUE)
+rld <- rlog(dds, blind = FALSE)
+
+pheatmap(assay(rld)[top_hits,], cluster_rows = FALSE,
+         show_rownames = TRUE, cluster_cols = FALSE)
+pheatmap(assay(rld)[top_hits,])
+
+annot_info <- as.data.frame(colData(dds)[,c('condition')])
+pheatmap(assay(rld)[top_hits,], cluster_rows = FALSE,
+         show_rownames = TRUE, cluster_cols = FALSE,
+         annotation_col = annot_info)
+
+#heat map of Z scores
+cal_z_score <- function(x){(x-mean(x))/sd(x)}
+
+zscore_all <- t(apply(normalised_counts, 1, cal_z_score))
+zscore_subset <- zscore_all[top_hits,]
+pheatmap(zscore_subset)
+
+
+#MA plot
+plotMA(dds, ylim=c(-2,2))
+
+resultsNames(dds)
+if (!require("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+
+BiocManager::install("apeglm")
+BiocManager::install("ashr")
+
+resLFC <- lfcShrink(dds, coef = "condition_mutant_vs_control", type= "apeglm")
+resLFC
+
+resLFC <- as.data.frame(resLFC)
+sig <- resLFC %>% filter(resLFC$padj < 0.05)
+write.csv(sig, 'des_sig_resLFC.csv')
+
+#sig up
+up <- sig[sig$log2FoldChange > 1,]
+write.csv(up, 'deseq_2xup_count_alba.csv')
+
+down <- sig[sig$log2FoldChange < -1,]
+write.csv(down, 'deseq_2xdown_count_alba.csv')
+plotMA(resLFC, ylim=c(-2,2))
+
+#volcano plot
+
+#changeresLFC to a dataframe
+resLFC <- as.data.frame(resLFC)
+
+#label the genes
+resLFC$diffexpressed <- 'NO'
+resLFC$diffexpressed[resLFC$log2FoldChange>0.1 & resLFC$padj < 0.05] <- 'UP'
+resLFC$diffexpressed[resLFC$log2FoldChange<0.1 & resLFC$padj < 0.05] <- 'DOWN'
+
+resLFC$delabel <- NA
+
+#see how many genes are up or down
+table(unlist(strsplit(tolower(resLFC$diffexpressed), " ")))
+
+ggplot(data = resLFC, aes(x=log2FoldChange, y= -log10(pvalue),
+                          col = diffexpressed, label=delabel))+
+  geom_point(size = 1)+
+  theme_minimal()+
+  labs(x = "Fold change (log2)", y = "-log10(P-value)") +
+  #geom_text_repel()+
+  scale_color_manual(values = c('blue','black','red'))+
+  scale_x_continuous(limits = c(-max(abs(resLFC$log2FoldChange)),max(resLFC$log2FoldChange))) +
+  scale_y_continuous(limits = c(0,NA), labels = function(i) 10^-i)
+#+
+  #theme(text=element_text(size=8))
+
+#attempt to label genes in volcano plot
+if (!requireNamespace('BiocManager', quietly = TRUE))
+  install.packages('BiocManager')
+
+BiocManager::install('EnhancedVolcano')
+library(EnhancedVolcano)
+
+#Call gene ensemble
+library(biomaRt)
+
+#function to search for specific words
+if(interactive()){
+  
+  ## list the available Ensembl marts and use Ensembl Genes
+  listEnsembl()
+  ensembl <- useEnsembl(biomart = "ensembl")
+  
+  ## list the available datasets in this Mart
+  listDatasets(mart = ensembl)
+  
+  ## the list of Ensembl datasets grows ever larger (101 as of Ensembl 93)
+  ## we can search for a term of interest to reduce the length e.g. 'sapiens'
+  searchDatasets(mart = ensembl, pattern = "athaliana")
+}
+
+ensembl <- useEnsemblGenomes(biomart = "plants_mart",
+                             dataset = "athaliana_eg_gene") #get gene names frombiomart
+
+EnhancedVolcano(resLFC,
+                lab = rownames(resLFC),
+                x= 'log2FoldChange', y= 'padj')
+
+mutateddf <- mutate(resLFC, sig=ifelse(resLFC$padj<0.1, "padj<0.1", "Not Sig")) #Will have different colors depending on significance
+input <- cbind(gene=rownames(mutateddf ), mutateddf ) #convert the rownames to a column
+volc = ggplot(input, aes(log2FoldChange, -log10(pvalue))) + #volcanoplot with log2Foldchange versus pvalue
+  geom_point(aes(col=sig)) + #add points colored by significance
+  scale_color_manual(values=c("black", "red")) #+ 
+  #ggtitle("Your title here") #e.g. 'Volcanoplot DESeq2'
+volc+geom_text_repel(data=head(input, 10), aes(label=gene)) #adding text for the top 20 genes
+#ggsave("Volcanoplot.jpeg", device="jpeg") #In case you want to easily save to disk
+volc
