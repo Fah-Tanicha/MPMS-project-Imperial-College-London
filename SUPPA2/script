@@ -1,0 +1,83 @@
+##SUPPA2
+#install suppa
+conda install -c bioconda SUPPA=2.3
+
+#look at the command structure
+
+suppa.py subcommand options
+
+###1. extract TPM values from quant.sf file of Salmon
+# -k indicates the row used as the index
+# -f indicates the column to be extracted from the Salmon output
+python tools/SUPPA-2.3/multipleFieldSelection.py -i sal_quant_all/sr451_quant.sf -k 1 -f 4 -o suppa/iso_sr451_tpm.txt
+python tools/SUPPA-2.3/multipleFieldSelection.py -i sal_quant_all/sr452_quant.sf -k 1 -f 4 -o suppa/iso_sr452_tpm.txt
+python tools/SUPPA-2.3/multipleFieldSelection.py -i sal_quant_all/col01_quant.sf -k 1 -f 4 -o suppa/iso_col01_tpm.txt
+python tools/SUPPA-2.3/multipleFieldSelection.py -i sal_quant_all/col02_quant.sf -k 1 -f 4 -o suppa/iso_col02_tpm.txt
+
+###2 combine all iso_tpm to one file
+python tools/SUPPA-2.3/suppa.py joinFiles -f tpm -i suppa/iso_col01_tpm.txt suppa/iso_col02_tpm.txt suppa/iso_sr451_tpm.txt suppa/iso_sr452_tpm.txt -o suppa/all_samples_tpm 
+
+###3. Generate IOE files
+#Generate the ioe files: 
+python tools/SUPPA-2.3/suppa.py generateEvents -i AtRTD2_19April2016.gtf -o suppa/events/At_RTD.events -e SE SS MX RI FL -f ioe
+python tools/SUPPA-2.3/suppa.py generateEvents -i AtRTDv2_QUASI_19April2016.gtf -o suppa/events/At_QUASI_RTD.events -e SE SS MX RI FL -f ioe
+
+#Put all the ioe events in the same file:
+awk '
+    FNR==1 && NR!=1 { while (/^<header>/) getline; }
+    1 {print}
+' suppa/events/*.ioe > suppa/events/AtRTD.events.ioe
+
+awk '
+    FNR==1 && NR!=1 { while (/^<header>/) getline; }
+    1 {print}
+' suppa/events/At_QUASI_RTD.events_*_strict.ioe > suppa/events/AtRTD_QUASI.events.ioe
+
+###4. Obtain PSI value
+python tools/SUPPA-2.3/suppa.py psiPerEvent -i suppa/events/AtRTD.events.ioe -e suppa/all_samples_tpm.tpm -o suppa/generated_events
+python tools/SUPPA-2.3/suppa.py psiPerEvent -i suppa/events/AtRTD_QUASI.events.ioe -e suppa/all_samples_tpm.tpm -o suppa/generated_QUASI_events
+
+#look at one of the interesting genes
+#sr45
+grep AT1G16610 suppa/generated_events.psi
+
+#Should check with the genes that we are sure that are spliced
+
+
+###5. Differential splicing on local events
+#Split the PSI and TPM files between the 2 conditions:
+tools/SUPPA-2.3/scripts/split_file.R suppa/all_samples_tpm.tpm iso_col01_tpm_sal_quant_all,iso_col02_tpm_sal_quant_all iso_sr451_tpm_sal_quant_all,iso_sr451_tpm_sal_quant_all col_iso.tpm sr45_iso.tpm -i
+tools/SUPPA-2.3/scripts/split_file.R suppa/generated_events.psi iso_col01_tpm_sal_quant_all,iso_col02_tpm_sal_quant_all iso_sr451_tpm_sal_quant_all,iso_sr451_tpm_sal_quant_all col_events.psi sr45_events.psi -e
+
+tools/SUPPA-2.3/scripts/split_file.R suppa/generated_QUASI_events.psi iso_col01_tpm_sal_quant_all,iso_col02_tpm_sal_quant_all iso_sr451_tpm_sal_quant_all,iso_sr451_tpm_sal_quant_all col_QUASI_events.psi sr45_QUASI_events.psi -e
+
+#perform the diffsplice
+python tools/SUPPA-2.3/suppa.py diffSplice -m empirical -gc -i suppa/events/AtRTD.events.ioe -p suppa/col_events.psi suppa/sr45_events.psi -e suppa/col_iso.tpm suppa/sr45_iso.tpm --save_tpm_events -o suppa/SR45_diffSplice
+python tools/SUPPA-2.3/suppa.py diffSplice -m empirical -gc -i suppa/events/AtRTD.events.ioe -p suppa/sr45_events.psi suppa/col_events.psi -e suppa/sr45_iso.tpm suppa/col_iso.tpm --save_tpm_events -o suppa/sr-col_diffSplice
+
+python tools/SUPPA-2.3/suppa.py diffSplice -m empirical -gc -i suppa/events/AtRTD_QUASI.events.ioe -p suppa/sr45_QUASI_events.psi suppa/col_QUASI_events.psi -e suppa/sr45_iso.tpm suppa/col_iso.tpm --save_tpm_events -o suppa/sr-col_QUASI_diffSplice
+
+#look at one of the interesting genes
+#sr45
+grep AT1G16610 suppa/sr-col_diffSplice.dpsi.temp.0 
+grep AT1G16610 suppa/notusedbutkeep/SR45_diffSplice.dpsi.temp.0
+grep AT1G16610 suppa/quasi/sr-col_QUASI_diffSplice.dpsi.temp.0
+grep AT4G10060 suppa/quasi/sr-col_QUASI_diffSplice.dpsi.temp.0
+
+##### Differential transcript usage ####
+###1. Run SUPPA2 for obtaining the ioi file from the annotation
+python tools/SUPPA-2.3/suppa.py generateEvents -f ioi -i AtRTD2_19April2016.gtf -o suppa/At_RTD.isoforms
+
+###2. compute the PSI values of the isoforms:
+python tools/SUPPA-2.3/suppa.py psiPerIsoform -g AtRTD2_19April2016.gtf -e suppa/all_samples_tpm.tpm -o suppa/psi_per_iso
+
+###3. Split the PSI files between 2 conditions:
+tools/SUPPA-2.3/scripts/split_file.R suppa/psi_per_iso_isoform.psi iso_col01_tpm_sal_quant_all,iso_col02_tpm_sal_quant_all iso_sr451_tpm_sal_quant_all,iso_sr451_tpm_sal_quant_all col_iso_iso.psi sr45_iso_iso.psi -i
+
+#Run SUPPA2
+python tools/SUPPA-2.3/suppa.py diffSplice -m empirical -gc -i suppa/At_RTD.isoforms.ioi -p suppa/col_iso_iso.psi suppa/sr45_iso_iso.psi -e suppa/sr45_iso.tpm suppa/col_iso.tpm --save_tpm_events -o suppa/transcript_diffSplice
+
+#look at one of the interesting genes
+#sr45
+grep AT1G16610 suppa/transcript_usage/transcript_diffSplice.dpsi.temp.0
+grep AT4G10060 suppa/transcript_usage/transcript_diffSplice.dpsi.temp.0
