@@ -1,0 +1,26 @@
+##1. Download the reference transcripts fastq
+$ curl -o AtRTD2_19April2016.fa https://ics.hutton.ac.uk/atRTD/RTD2/AtRTD2_19April2016.fa 
+
+##2. make genome sequence GCF_000001735_4 a decoy
+$ grep "^>" <(unzip -c GCF_000001735_4.zip ) | cut -d " " -f 1 > decoys.txt
+$ sed -i.bak -e 's/>//g' decoys.txt   #then get rid of '>'
+$ head decoys.txt
+#this is how 'decoy.txt' looks like
+1
+2
+3
+4
+5
+Mt
+Pt
+
+##3. build decoy-aware sequence
+$ cat AtRTD2_19April2016.fa decoys.txt > trans_decoys.fa.gz
+
+##4. Indexing
+$ salmon index -t trans_decoy.fa.gz -d decoy.txt -p 20 -i salmon_index
+
+##5. Quantification
+#This is repeated for all the sample fastq sequences
+$ salmon quant -i salmon_index/ -l A -1 fastq/col0_2/V300051760_L3_HK500ARAthmEAABRAAPEI-532_1.fq.gz -2 fastq/col0_2/V300051760_L3_HK500ARAthmEAABRAAPEI-532_2.fq.gz --validateMappings -o salmon_quant_gc/out_dir --gcBias
+
