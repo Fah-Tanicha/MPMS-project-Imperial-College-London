@@ -1,0 +1,121 @@
+#Limma-Voom is DE analysis tool similar to deseq2
+
+rm(list=ls()) # clear all variables and graphics
+graphics.off()
+
+###prepare packages
+library(limma)
+library(edgeR)
+library(ggplot2)
+library(clusterProfiler)
+library(AnnotationDbi)
+library(org.At.tair.db)
+library(enrichplot)
+
+###set working directory
+setwd('/Users/baiprongfah/Master-ICL/MPMS-project2/SR45-reads')
+
+#get data
+count <- read.csv('counts_table.csv', row.names = 1)
+head(count)
+
+##1: create DGEList object
+d0 <- DGEList(count)
+
+##2: Preprocessing 
+#Calculate normalisation factors
+d0 <- calcNormFactors(d0)
+d0
+
+#filter low-expressed genes
+#get rid of gene with count lower than 1 count per million
+cutoff <- 1
+drop <- which(apply(cpm(d0), 1, max) < cutoff) 
+d <- d0[-drop,]
+dim(d) #check number of genes left
+head(d)
+
+#create vector of treatment
+condition <- factor(c("WT","WT","Mutant","Mutant"))
+con <- factor(c('col0_1', 'col0_2', 'sr45_1', 'sr45_2'))
+
+names(condition) <- con
+condition
+
+#load sample info
+sample_info <- read.csv('condition.csv', header = TRUE, row.names = 1)
+colnames(sample_info)
+head(sample_info)
+
+#set factor levels
+sample_info$condition <- factor(sample_info$condition)
+
+
+
+#check group 
+plotMDS(d, col = as.numeric(sample_info$condition))
+
+##3: Voom transformation and caluculation of variance weights
+mm <- model.matrix(~0 + sample_info$condition)
+m <- model.matrix(~0 + condition)
+y <- limma::voom(d, mm, plot = TRUE)
+y <- limma::voom(d, m, plot = TRUE) #different condition m, mm parameter, it gave the same voom plot
+
+
+##4: Fitting linear models in limma
+fit <- lmFit(y, m)
+head(coef(fit))
+
+
+#estimate contrast for each gene between wt and mut
+contr <- makeContrasts(conditionMutant - conditionWT, levels = colnames(coef(fit))) #create contrast for comparison
+tmp <- contrasts.fit(fit2, contr) #estimate contrast for each genes
+tmp <- eBayes(tmp) #Empirical Bayes smoothing of standard errors
+
+##5: save result
+top.table <- topTable(tmp, sort.by = 'P', n= Inf)
+?topT
+#how many sig DE genes
+length(which(top.table$adj.P.Val < 0.05)) 
+#ans 6551
+
+head(top.table, 5)
+
+##6: save the top.table file
+top.table$gene_id <- rownames(top.table)
+top.table <- top.table[,c("gene_id", names(top.table)[1:6])]
+write.csv(top.table, file = "limma_count_alba.csv", row.names = F)
+
+sig <- top.table[top.table$adj.P.Val < 0.05,]
+write.csv(top.table, file = "limma_sig_count_alba.csv", row.names = F)
+
+#Select up or down regulation of the no_na
+#up 2 fold in mutant
+up <- sig[sig$logFC > 1,]
+head(up)
+write.csv(up, 'limma_2xup_count_alba.csv')
+#down 2fold in mutant
+down <- sig[sig$logFC < -1,]
+write.csv(down, 'limma_2xdown_count_alba.csv')
+
+###########GO analysis######
+##1: choose significant de genes
+sig <- top.table[top.table$adj.P.Val < 0.05,]
+head(sig)
+##2: Select up or down regulation of the no_na
+#up 2 fold in mutant
+up <- rownames(sig[sig$logFC > 1,])
+
+#down 2fold in mutant
+down <- rownames(sig[sig$logFC < -1,])
+
+##3: GO analysis
+keytypes(org.At.tair.db) #check keytype of gene input
+GO_results <- enrichGO(gene = down, 
+                       OrgDb = 'org.At.tair.db', 
+                       keyType = "TAIR", 
+                       ont = "BP",
+                       pvalueCutoff = 0.05)
+
+##4: visualise
+dotplot(GO_results, title = 'GO on sig down in sr45 mut limma')
