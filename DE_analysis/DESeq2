@@ -103,11 +103,10 @@ plotPCA(vsd, intgroup= c('condition')) + coord_fixed(ratio = 1.5)
 sampleDists <- dist(t(assay(vsd))) 
 samplDistMatrix <- as.matrix(sampleDists) #generate matrix
 colnames(samplDistMatrix)
-?dist
+
 #2:set colors
 colors <- colorRampPalette(rev(brewer.pal(9,'Blues')))(255)
 
-?colorRampPalette
 #3: generate heat map
 pheatmap(samplDistMatrix, clustering_distance_rows = sampleDists,
          clustering_distance_cols = sampleDists,col =colors)
@@ -119,7 +118,6 @@ top_hits <- deseq_result[order(deseq_result$padj),][1:50,]
 top_hits <- row.names(top_hits)
 
 rld <- rlog(dds, blind = TRUE)
-rld <- rlog(dds, blind = FALSE)
 
 pheatmap(assay(rld)[top_hits,], cluster_rows = FALSE,
          show_rownames = TRUE, cluster_cols = FALSE)
@@ -190,44 +188,3 @@ ggplot(data = resLFC, aes(x=log2FoldChange, y= -log10(pvalue),
 #+
   #theme(text=element_text(size=8))
 
-#attempt to label genes in volcano plot
-if (!requireNamespace('BiocManager', quietly = TRUE))
-  install.packages('BiocManager')
-
-BiocManager::install('EnhancedVolcano')
-library(EnhancedVolcano)
-
-#Call gene ensemble
-library(biomaRt)
-
-#function to search for specific words
-if(interactive()){
-  
-  ## list the available Ensembl marts and use Ensembl Genes
-  listEnsembl()
-  ensembl <- useEnsembl(biomart = "ensembl")
-  
-  ## list the available datasets in this Mart
-  listDatasets(mart = ensembl)
-  
-  ## the list of Ensembl datasets grows ever larger (101 as of Ensembl 93)
-  ## we can search for a term of interest to reduce the length e.g. 'sapiens'
-  searchDatasets(mart = ensembl, pattern = "athaliana")
-}
-
-ensembl <- useEnsemblGenomes(biomart = "plants_mart",
-                             dataset = "athaliana_eg_gene") #get gene names frombiomart
-
-EnhancedVolcano(resLFC,
-                lab = rownames(resLFC),
-                x= 'log2FoldChange', y= 'padj')
-
-mutateddf <- mutate(resLFC, sig=ifelse(resLFC$padj<0.1, "padj<0.1", "Not Sig")) #Will have different colors depending on significance
-input <- cbind(gene=rownames(mutateddf ), mutateddf ) #convert the rownames to a column
-volc = ggplot(input, aes(log2FoldChange, -log10(pvalue))) + #volcanoplot with log2Foldchange versus pvalue
-  geom_point(aes(col=sig)) + #add points colored by significance
-  scale_color_manual(values=c("black", "red")) #+ 
-  #ggtitle("Your title here") #e.g. 'Volcanoplot DESeq2'
-volc+geom_text_repel(data=head(input, 10), aes(label=gene)) #adding text for the top 20 genes
-#ggsave("Volcanoplot.jpeg", device="jpeg") #In case you want to easily save to disk
-volc
