@@ -1,4 +1,8 @@
 ##SUPPA2
+'''This is run in terminal.
+'''version conda v 24.5.0 SUPPA v 2.3
+'''os macOS Monterey Version 12.7.1
+
 #install suppa
 conda install -c bioconda SUPPA=2.3
 
