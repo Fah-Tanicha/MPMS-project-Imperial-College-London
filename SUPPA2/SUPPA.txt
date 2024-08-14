@@ -61,13 +61,6 @@ python tools/SUPPA-2.3/suppa.py diffSplice -m empirical -gc -i suppa/events/AtRT
 
 python tools/SUPPA-2.3/suppa.py diffSplice -m empirical -gc -i suppa/events/AtRTD_QUASI.events.ioe -p suppa/sr45_QUASI_events.psi suppa/col_QUASI_events.psi -e suppa/sr45_iso.tpm suppa/col_iso.tpm --save_tpm_events -o suppa/sr-col_QUASI_diffSplice
 
-#look at one of the interesting genes
-#sr45
-grep AT1G16610 suppa/sr-col_diffSplice.dpsi.temp.0 
-grep AT1G16610 suppa/notusedbutkeep/SR45_diffSplice.dpsi.temp.0
-grep AT1G16610 suppa/quasi/sr-col_QUASI_diffSplice.dpsi.temp.0
-grep AT4G10060 suppa/quasi/sr-col_QUASI_diffSplice.dpsi.temp.0
-
 ##### Differential transcript usage ####
 ###1. Run SUPPA2 for obtaining the ioi file from the annotation
 python tools/SUPPA-2.3/suppa.py generateEvents -f ioi -i AtRTD2_19April2016.gtf -o suppa/At_RTD.isoforms
@@ -81,7 +74,4 @@ tools/SUPPA-2.3/scripts/split_file.R suppa/psi_per_iso_isoform.psi iso_col01_tpm
 #Run SUPPA2
 python tools/SUPPA-2.3/suppa.py diffSplice -m empirical -gc -i suppa/At_RTD.isoforms.ioi -p suppa/col_iso_iso.psi suppa/sr45_iso_iso.psi -e suppa/sr45_iso.tpm suppa/col_iso.tpm --save_tpm_events -o suppa/transcript_diffSplice
 
-#look at one of the interesting genes
-#sr45
-grep AT1G16610 suppa/transcript_usage/transcript_diffSplice.dpsi.temp.0
-grep AT4G10060 suppa/transcript_usage/transcript_diffSplice.dpsi.temp.0
+
