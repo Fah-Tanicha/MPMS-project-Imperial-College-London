@@ -1,0 +1,427 @@
+##gff-version 3
+# AT1G01940_P1 Length: 160
+# AT1G01940_P1 Number of predicted TMRs: 0
+AT1G01940_P1	inside	1	160				
+//
+# AT1G20220_P1 Length: 315
+# AT1G20220_P1 Number of predicted TMRs: 0
+AT1G20220_P1	inside	1	315				
+//
+# AT1G27970_P1 Length: 126
+# AT1G27970_P1 Number of predicted TMRs: 0
+AT1G27970_P1	inside	1	126				
+//
+# AT1G27970.2 Length: 134
+# AT1G27970.2 Number of predicted TMRs: 0
+AT1G27970.2	inside	1	134				
+//
+# AT1G51830_P2 Length: 700
+# AT1G51830_P2 Number of predicted TMRs: 1
+AT1G51830_P2	outside	1	326				
+AT1G51830_P2	TMhelix	327	347				
+AT1G51830_P2	inside	348	700				
+//
+# AT2G01450_P1 Length: 486
+# AT2G01450_P1 Number of predicted TMRs: 0
+AT2G01450_P1	inside	1	486				
+//
+# AT2G01450.2 Length: 486
+# AT2G01450.2 Number of predicted TMRs: 0
+AT2G01450.2	inside	1	486				
+//
+# AT2G01450.3 Length: 486
+# AT2G01450.3 Number of predicted TMRs: 0
+AT2G01450.3	inside	1	486				
+//
+# AT2G21385.1 Length: 330
+# AT2G21385.1 Number of predicted TMRs: 0
+AT2G21385.1	inside	1	330				
+//
+# AT2G21385.2 Length: 252
+# AT2G21385.2 Number of predicted TMRs: 0
+AT2G21385.2	inside	1	252				
+//
+# AT2G21385.3 Length: 334
+# AT2G21385.3 Number of predicted TMRs: 0
+AT2G21385.3	inside	1	334				
+//
+# AT2G21385.4 Length: 373
+# AT2G21385.4 Number of predicted TMRs: 0
+AT2G21385.4	inside	1	373				
+//
+# AT2G22720_P3 Length: 569
+# AT2G22720_P3 Number of predicted TMRs: 0
+AT2G22720_P3	inside	1	569				
+//
+# AT2G22720_P5 Length: 561
+# AT2G22720_P5 Number of predicted TMRs: 0
+AT2G22720_P5	inside	1	561				
+//
+# AT2G22720_P6 Length: 561
+# AT2G22720_P6 Number of predicted TMRs: 0
+AT2G22720_P6	inside	1	561				
+//
+# AT2G30170_P1 Length: 298
+# AT2G30170_P1 Number of predicted TMRs: 0
+AT2G30170_P1	inside	1	298				
+//
+# AT2G30170_P4 Length: 224
+# AT2G30170_P4 Number of predicted TMRs: 0
+AT2G30170_P4	inside	1	224				
+//
+# AT2G30170_P5 Length: 265
+# AT2G30170_P5 Number of predicted TMRs: 0
+AT2G30170_P5	inside	1	265				
+//
+# AT2G30170_P7 Length: 188
+# AT2G30170_P7 Number of predicted TMRs: 0
+AT2G30170_P7	inside	1	188				
+//
+# AT2G41230_P1 Length: 88
+# AT2G41230_P1 Number of predicted TMRs: 2
+AT2G41230_P1	inside	1	29				
+AT2G41230_P1	TMhelix	30	47				
+AT2G41230_P1	outside	48	54				
+AT2G41230_P1	TMhelix	55	72				
+AT2G41230_P1	inside	73	88				
+//
+# AT2G44980_P2 Length: 877
+# AT2G44980_P2 Number of predicted TMRs: 0
+AT2G44980_P2	inside	1	877				
+//
+# AT2G44980_P3 Length: 876
+# AT2G44980_P3 Number of predicted TMRs: 0
+AT2G44980_P3	inside	1	876				
+//
+# AT3G13340_P1 Length: 447
+# AT3G13340_P1 Number of predicted TMRs: 0
+AT3G13340_P1	inside	1	447				
+//
+# AT3G13340_P2 Length: 447
+# AT3G13340_P2 Number of predicted TMRs: 0
+AT3G13340_P2	inside	1	447				
+//
+# AT3G13340_P3 Length: 447
+# AT3G13340_P3 Number of predicted TMRs: 0
+AT3G13340_P3	inside	1	447				
+//
+# AT3G20290_P2 Length: 545
+# AT3G20290_P2 Number of predicted TMRs: 0
+AT3G20290_P2	inside	1	545				
+//
+# AT3G20290_P3 Length: 545
+# AT3G20290_P3 Number of predicted TMRs: 0
+AT3G20290_P3	inside	1	545				
+//
+# AT3G25540_P1 Length: 310
+# AT3G25540_P1 Number of predicted TMRs: 7
+AT3G25540_P1	outside	1	22				
+AT3G25540_P1	TMhelix	23	45				
+AT3G25540_P1	inside	46	81				
+AT3G25540_P1	TMhelix	82	101				
+AT3G25540_P1	outside	102	128				
+AT3G25540_P1	TMhelix	129	150				
+AT3G25540_P1	inside	151	156				
+AT3G25540_P1	TMhelix	157	176				
+AT3G25540_P1	outside	177	181				
+AT3G25540_P1	TMhelix	182	199				
+AT3G25540_P1	inside	200	210				
+AT3G25540_P1	TMhelix	211	236				
+AT3G25540_P1	outside	237	260				
+AT3G25540_P1	TMhelix	261	281				
+AT3G25540_P1	inside	282	310				
+//
+# AT3G25540_P2 Length: 242
+# AT3G25540_P2 Number of predicted TMRs: 6
+AT3G25540_P2	outside	1	22				
+AT3G25540_P2	TMhelix	23	44				
+AT3G25540_P2	inside	45	81				
+AT3G25540_P2	TMhelix	82	101				
+AT3G25540_P2	outside	102	128				
+AT3G25540_P2	TMhelix	129	150				
+AT3G25540_P2	inside	151	156				
+AT3G25540_P2	TMhelix	157	176				
+AT3G25540_P2	outside	177	181				
+AT3G25540_P2	TMhelix	182	199				
+AT3G25540_P2	inside	200	213				
+AT3G25540_P2	TMhelix	214	236				
+AT3G25540_P2	outside	237	242				
+//
+# AT3G25540.1 Length: 310
+# AT3G25540.1 Number of predicted TMRs: 7
+AT3G25540.1	outside	1	22				
+AT3G25540.1	TMhelix	23	45				
+AT3G25540.1	inside	46	81				
+AT3G25540.1	TMhelix	82	101				
+AT3G25540.1	outside	102	128				
+AT3G25540.1	TMhelix	129	150				
+AT3G25540.1	inside	151	156				
+AT3G25540.1	TMhelix	157	176				
+AT3G25540.1	outside	177	181				
+AT3G25540.1	TMhelix	182	199				
+AT3G25540.1	inside	200	210				
+AT3G25540.1	TMhelix	211	236				
+AT3G25540.1	outside	237	260				
+AT3G25540.1	TMhelix	261	281				
+AT3G25540.1	inside	282	310				
+//
+# AT3G51240.1 Length: 358
+# AT3G51240.1 Number of predicted TMRs: 0
+AT3G51240.1	inside	1	358				
+//
+# AT3G51240.2 Length: 274
+# AT3G51240.2 Number of predicted TMRs: 0
+AT3G51240.2	inside	1	274				
+//
+# AT3G54960_P1 Length: 579
+# AT3G54960_P1 Number of predicted TMRs: 0
+AT3G54960_P1	signal	1	25				
+AT3G54960_P1	outside	26	579				
+//
+# AT3G56160_P2 Length: 357
+# AT3G56160_P2 Number of predicted TMRs: 8
+AT3G56160_P2	inside	1	81				
+AT3G56160_P2	TMhelix	82	95				
+AT3G56160_P2	outside	96	108				
+AT3G56160_P2	TMhelix	109	123				
+AT3G56160_P2	inside	124	135				
+AT3G56160_P2	TMhelix	136	160				
+AT3G56160_P2	outside	161	171				
+AT3G56160_P2	TMhelix	172	186				
+AT3G56160_P2	inside	187	197				
+AT3G56160_P2	TMhelix	198	218				
+AT3G56160_P2	outside	219	238				
+AT3G56160_P2	TMhelix	239	253				
+AT3G56160_P2	inside	254	269				
+AT3G56160_P2	TMhelix	270	288				
+AT3G56160_P2	outside	289	302				
+AT3G56160_P2	TMhelix	303	324				
+AT3G56160_P2	inside	325	357				
+//
+# AT3G56160_P3 Length: 409
+# AT3G56160_P3 Number of predicted TMRs: 10
+AT3G56160_P3	inside	1	81				
+AT3G56160_P3	TMhelix	82	95				
+AT3G56160_P3	outside	96	108				
+AT3G56160_P3	TMhelix	109	123				
+AT3G56160_P3	inside	124	135				
+AT3G56160_P3	TMhelix	136	160				
+AT3G56160_P3	outside	161	171				
+AT3G56160_P3	TMhelix	172	186				
+AT3G56160_P3	inside	187	197				
+AT3G56160_P3	TMhelix	198	218				
+AT3G56160_P3	outside	219	238				
+AT3G56160_P3	TMhelix	239	253				
+AT3G56160_P3	inside	254	269				
+AT3G56160_P3	TMhelix	270	288				
+AT3G56160_P3	outside	289	301				
+AT3G56160_P3	TMhelix	302	324				
+AT3G56160_P3	inside	325	346				
+AT3G56160_P3	TMhelix	347	356				
+AT3G56160_P3	outside	357	374				
+AT3G56160_P3	TMhelix	375	395				
+AT3G56160_P3	inside	396	409				
+//
+# AT3G56160_P4 Length: 315
+# AT3G56160_P4 Number of predicted TMRs: 7
+AT3G56160_P4	inside	1	81				
+AT3G56160_P4	TMhelix	82	95				
+AT3G56160_P4	outside	96	108				
+AT3G56160_P4	TMhelix	109	121				
+AT3G56160_P4	inside	122	135				
+AT3G56160_P4	TMhelix	136	160				
+AT3G56160_P4	outside	161	173				
+AT3G56160_P4	TMhelix	174	186				
+AT3G56160_P4	inside	187	197				
+AT3G56160_P4	TMhelix	198	218				
+AT3G56160_P4	outside	219	238				
+AT3G56160_P4	TMhelix	239	253				
+AT3G56160_P4	inside	254	265				
+AT3G56160_P4	TMhelix	266	283				
+AT3G56160_P4	outside	284	315				
+//
+# AT3G56160_P5 Length: 342
+# AT3G56160_P5 Number of predicted TMRs: 8
+AT3G56160_P5	inside	1	108				
+AT3G56160_P5	TMhelix	109	122				
+AT3G56160_P5	outside	123	135				
+AT3G56160_P5	TMhelix	136	148				
+AT3G56160_P5	inside	149	162				
+AT3G56160_P5	TMhelix	163	187				
+AT3G56160_P5	outside	188	200				
+AT3G56160_P5	TMhelix	201	215				
+AT3G56160_P5	inside	216	224				
+AT3G56160_P5	TMhelix	225	245				
+AT3G56160_P5	outside	246	265				
+AT3G56160_P5	TMhelix	266	280				
+AT3G56160_P5	inside	281	296				
+AT3G56160_P5	TMhelix	297	315				
+AT3G56160_P5	outside	316	328				
+AT3G56160_P5	TMhelix	329	341				
+AT3G56160_P5	inside	342	342				
+//
+# AT4G02450_P1 Length: 241
+# AT4G02450_P1 Number of predicted TMRs: 0
+AT4G02450_P1	inside	1	241				
+//
+# AT4G10130_P1 Length: 174
+# AT4G10130_P1 Number of predicted TMRs: 0
+AT4G10130_P1	inside	1	174				
+//
+# AT4G10130_P2 Length: 174
+# AT4G10130_P2 Number of predicted TMRs: 0
+AT4G10130_P2	inside	1	174				
+//
+# AT4G11120_P1 Length: 395
+# AT4G11120_P1 Number of predicted TMRs: 0
+AT4G11120_P1	inside	1	395				
+//
+# AT4G13150_P1 Length: 347
+# AT4G13150_P1 Number of predicted TMRs: 4
+AT4G13150_P1	inside	1	145				
+AT4G13150_P1	TMhelix	146	167				
+AT4G13150_P1	outside	168	198				
+AT4G13150_P1	TMhelix	199	216				
+AT4G13150_P1	inside	217	281				
+AT4G13150_P1	TMhelix	282	304				
+AT4G13150_P1	outside	305	310				
+AT4G13150_P1	TMhelix	311	331				
+AT4G13150_P1	inside	332	347				
+//
+# AT4G13150_P2 Length: 281
+# AT4G13150_P2 Number of predicted TMRs: 2
+AT4G13150_P2	inside	1	146				
+AT4G13150_P2	TMhelix	147	167				
+AT4G13150_P2	outside	168	194				
+AT4G13150_P2	TMhelix	195	216				
+AT4G13150_P2	inside	217	281				
+//
+# AT4G13150_P4 Length: 258
+# AT4G13150_P4 Number of predicted TMRs: 2
+AT4G13150_P4	inside	1	146				
+AT4G13150_P4	TMhelix	147	169				
+AT4G13150_P4	outside	170	194				
+AT4G13150_P4	TMhelix	195	216				
+AT4G13150_P4	inside	217	258				
+//
+# AT4G27040_P1 Length: 250
+# AT4G27040_P1 Number of predicted TMRs: 0
+AT4G27040_P1	inside	1	250				
+//
+# AT4G27040_P4 Length: 250
+# AT4G27040_P4 Number of predicted TMRs: 0
+AT4G27040_P4	inside	1	250				
+//
+# AT4G27040_P6 Length: 250
+# AT4G27040_P6 Number of predicted TMRs: 0
+AT4G27040_P6	inside	1	250				
+//
+# AT4G27040.2 Length: 250
+# AT4G27040.2 Number of predicted TMRs: 0
+AT4G27040.2	inside	1	250				
+//
+# AT4G30200_P2 Length: 714
+# AT4G30200_P2 Number of predicted TMRs: 0
+AT4G30200_P2	inside	1	714				
+//
+# AT4G30200_P3 Length: 702
+# AT4G30200_P3 Number of predicted TMRs: 0
+AT4G30200_P3	inside	1	702				
+//
+# AT4G30260_P2 Length: 355
+# AT4G30260_P2 Number of predicted TMRs: 5
+AT4G30260_P2	inside	1	221				
+AT4G30260_P2	TMhelix	222	238				
+AT4G30260_P2	outside	239	246				
+AT4G30260_P2	TMhelix	247	267				
+AT4G30260_P2	inside	268	278				
+AT4G30260_P2	TMhelix	279	298				
+AT4G30260_P2	outside	299	302				
+AT4G30260_P2	TMhelix	303	323				
+AT4G30260_P2	inside	324	335				
+AT4G30260_P2	TMhelix	336	354				
+AT4G30260_P2	outside	355	355				
+//
+# AT4G35020_P1 Length: 198
+# AT4G35020_P1 Number of predicted TMRs: 0
+AT4G35020_P1	inside	1	198				
+//
+# AT4G35020_P3 Length: 198
+# AT4G35020_P3 Number of predicted TMRs: 0
+AT4G35020_P3	inside	1	198				
+//
+# AT4G35020_P5 Length: 146
+# AT4G35020_P5 Number of predicted TMRs: 0
+AT4G35020_P5	inside	1	146				
+//
+# AT4G38510.1 Length: 487
+# AT4G38510.1 Number of predicted TMRs: 0
+AT4G38510.1	inside	1	487				
+//
+# AT4G38510.2 Length: 487
+# AT4G38510.2 Number of predicted TMRs: 0
+AT4G38510.2	inside	1	487				
+//
+# AT4G38510.3 Length: 487
+# AT4G38510.3 Number of predicted TMRs: 0
+AT4G38510.3	inside	1	487				
+//
+# AT4G38510.5 Length: 494
+# AT4G38510.5 Number of predicted TMRs: 0
+AT4G38510.5	inside	1	494				
+//
+# AT5G02780_P1 Length: 237
+# AT5G02780_P1 Number of predicted TMRs: 0
+AT5G02780_P1	inside	1	237				
+//
+# AT5G02780_P3 Length: 237
+# AT5G02780_P3 Number of predicted TMRs: 0
+AT5G02780_P3	inside	1	237				
+//
+# AT5G02780.2 Length: 235
+# AT5G02780.2 Number of predicted TMRs: 0
+AT5G02780.2	inside	1	235				
+//
+# AT5G38460_P1 Length: 533
+# AT5G38460_P1 Number of predicted TMRs: 8
+AT5G38460_P1	inside	1	41				
+AT5G38460_P1	TMhelix	42	58				
+AT5G38460_P1	outside	59	148				
+AT5G38460_P1	TMhelix	149	169				
+AT5G38460_P1	inside	170	181				
+AT5G38460_P1	TMhelix	182	198				
+AT5G38460_P1	outside	199	209				
+AT5G38460_P1	TMhelix	210	220				
+AT5G38460_P1	inside	221	271				
+AT5G38460_P1	TMhelix	272	283				
+AT5G38460_P1	outside	284	335				
+AT5G38460_P1	TMhelix	336	350				
+AT5G38460_P1	inside	351	462				
+AT5G38460_P1	TMhelix	463	483				
+AT5G38460_P1	outside	484	490				
+AT5G38460_P1	TMhelix	491	511				
+AT5G38460_P1	inside	512	533				
+//
+# AT5G38460.2 Length: 533
+# AT5G38460.2 Number of predicted TMRs: 8
+AT5G38460.2	inside	1	41				
+AT5G38460.2	TMhelix	42	58				
+AT5G38460.2	outside	59	148				
+AT5G38460.2	TMhelix	149	169				
+AT5G38460.2	inside	170	181				
+AT5G38460.2	TMhelix	182	198				
+AT5G38460.2	outside	199	209				
+AT5G38460.2	TMhelix	210	220				
+AT5G38460.2	inside	221	271				
+AT5G38460.2	TMhelix	272	283				
+AT5G38460.2	outside	284	335				
+AT5G38460.2	TMhelix	336	350				
+AT5G38460.2	inside	351	462				
+AT5G38460.2	TMhelix	463	483				
+AT5G38460.2	outside	484	490				
+AT5G38460.2	TMhelix	491	511				
+AT5G38460.2	inside	512	533				
+//
+# AT5G65685.1 Length: 460
+# AT5G65685.1 Number of predicted TMRs: 0
+AT5G65685.1	inside	1	460				
