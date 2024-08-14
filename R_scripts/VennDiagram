@@ -1,0 +1,53 @@
+#R 4.4.0
+#Venn diagrams
+install.packages('VennDiagram')
+library(VennDiagram)
+
+setwd('/Users/baiprongfah/Master-ICL/MPMS-project2')
+dtu <- read.csv('/Users/baiprongfah/Master-ICL/MPMS-project2/transcript_usage/quasi/sig_quasi_dtu.csv')
+dtu <- dtu[!duplicated(dtu$gene_id), ] #remove dup gene name
+dtu <- dtu[,1]
+
+l <- read.csv('/Users/baiprongfah/Master-ICL/MPMS-project2/Bi_etal_2021/salmon/sig_acinus_pinin_diffsplice.csv')
+l <- l[!duplicated(l$id), ]
+l <- l[,2]
+
+diffsplice <- read.csv('/Users/baiprongfah/SALMON/AtRTD/suppa/quasi/really_sig_filtered_diffsplice.csv')
+diffsplice <- diffsplice[,2]
+# Prepare a palette of 3 colors with R colorbrewer:
+library(RColorBrewer)
+myCol <- brewer.pal(8, "Pastel2")[c(1, 2)]
+
+# Chart
+venn.diagram(
+  x = list(dtu, l),
+  #category.names = c(expression(~italic("sr45")), expression(~italic('acinus/pinin'))),
+  category.names = c(expression(~italic("sr45/ap")), 'Common SARs'), 
+  filename = 'rip_ap_venn.png',
+  output=FALSE,
+  
+  # Output features
+  imagetype="png" ,
+  height = 4000 , 
+  width = 4000, 
+  resolution = 300,
+  compression = "lzw",
+  
+  # Circles
+  lwd = 2,
+  lty = 'blank',
+  col = 'black',
+  fill = myCol,
+
+  # Numbers
+  cex = 4,
+  fontface = "bold",
+  fontfamily = "sans",
+  # Set names
+  cat.cex = 4,
+  cat.fontface = "bold",
+  cat.default.pos = "outer",
+  cat.pos = c(360, 360),
+  #cat.dist = c(0.055, 0.055, 0.055),
+  cat.fontfamily = "sans"
+)
